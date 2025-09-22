@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>NI_CPU Assembler & Decompiler</title>
+  <style>
+    body { font-family: monospace; padding: 20px; background: #f9f9f9; }
+    h1 { margin-bottom: 10px; }
+    .container { display: flex; gap: 20px; flex-wrap: wrap; }
+    .box { flex: 1; min-width: 300px; display: flex; flex-direction: column; }
+    textarea {
+      width: 100%; height: 200px; font-family: monospace;
+      font-size: 14px; padding: 10px; box-sizing: border-box; resize: vertical;
+    }
+    button {
+      margin: 10px 0; padding: 10px 15px;
+      font-size: 16px; cursor: pointer; align-self: flex-start;
+    }
+    label { font-weight: bold; margin: 10px 0 5px; }
+    pre {
+      background: #222; color: #eee; padding: 10px;
+      white-space: pre-wrap; min-height: 60px;
+    }
+  </style>
+</head>
+<body>
+
+<h1>NI_CPU Assembler & Decompiler</h1>
+
+<div class="container">
+
+  <div class="box">
+    <label for="asmInput">Assembly Input</label>
+    <textarea id="asmInput" placeholder="e.g.&#10;von zp nach ar1&#10;re add&#10;none"></textarea>
+    <button onclick="assemble()">Assemble</button>
+    <label>Machine Code Output</label>
+    <pre id="asmOutput"></pre>
+  </div>
+
+  <div class="box">
+    <label for="hexInput">Hex Input</label>
+    <textarea id="hexInput" placeholder="e.g.&#10;1e,1d,00"></textarea>
+    <button onclick="decompile()">Decompile</button>
+    <label>Decompiled Assembly</label>
+    <pre id="hexOutput"></pre>
+  </div>
+
+</div>
+
+<a href="inst of cpu.txt">Machine code cheat sheet</a> <a href="assembler inst.txt">NI_assembly code cheat sheet</a>
+
+<script>
+const opcodeMap = {
+  0x00: "none",
+  0x1f: "von zp nach ar2",
+  0x1e: "von zp nach ar1",
+  0x1d: "re add",
+  0x5d: "re sub",
+  0x7d: "re and",
+  0x9d: "re or",
+  0xbd: "re xor",
+  0xdd: "re ar2_gt_ar1",
+  0xfd: "re ar1_gt_ar2",
+  0x1b: "von data nach zp",
+  0x1c: "von zp nach ram (re ra)",
+  0x1a: "von ram nach zp (re ra)",
+  0x19: "von zp nach ra",
+  0x18: "von zp nach output",
+  0x17: "von zp nach count",
+  0x16: "von zp nach output 2",
+  0x15: "von duip nach zp",
+  0x14: "von zp nach zpe",
+  0x13: "von zpe nach zp"
+};
+
+const reverseMap = Object.fromEntries(
+  Object.entries(opcodeMap).map(([k, v]) => [v, parseInt(k)])
+);
+
+function assemble() {
+  const input = document.getElementById("asmInput").value.trim().toLowerCase().split("\n");
+  const output = [];
+
+  for (const line of input) {
+    if (!line) continue;
+    const opcode = reverseMap[line.trim()];
+    if (opcode === undefined) {
+      alert(`Unknown instruction: ${line}`);
+      return;
+    }
+    output.push(opcode.toString(16).padStart(2, '0'));
+  }
+
+  document.getElementById("asmOutput").textContent = output.join(",");
+  document.getElementById("hexInput").value = output.join(",");
+}
+
+function decompile() {
+  const input = document.getElementById("hexInput").value.trim();
+  const bytes = input.split(/[\s,]+/).map(b => parseInt(b, 16));
+  const output = [];
+
+  for (const byte of bytes) {
+    if (isNaN(byte)) continue;
+    const asm = opcodeMap[byte];
+    output.push(asm || `unknown (${byte.toString(16).padStart(2, '0')})`);
+  }
+
+  document.getElementById("hexOutput").textContent = output.join("\n");
+}
+</script>
+
+</body>
+</html>

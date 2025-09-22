@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>NI-Script Compiler</title>
+  <style>
+    body { font-family: monospace; padding: 20px; background: #f4f4f4; }
+    textarea {
+      width: 100%; height: 180px; margin-bottom: 10px;
+      font-family: monospace; font-size: 14px; padding: 10px;
+      box-sizing: border-box; resize: vertical;
+    }
+    button { padding: 10px 20px; font-size: 16px; margin-bottom: 15px; }
+    label { font-weight: bold; display: block; margin-top: 10px; }
+    pre {
+      background: #222; color: #eee; padding: 10px;
+      white-space: pre-wrap; min-height: 50px;
+    }
+  </style>
+</head>
+<body>
+
+<h1>NI-Script Compiler</h1>
+
+<label>High-Level NI-Script Input:</label>
+<textarea id="nisciptInput" placeholder="e.g.&#10;load 5&#10;set ar1&#10;load 2&#10;set ar2&#10;add&#10;output&#10;noop"></textarea>
+
+<button onclick="compileNiScript()">Compile</button>
+
+<label>Compiled Assembly:</label>
+<pre id="assemblyOutput"></pre>
+
+<label>Machine Code (Hex):</label>
+<pre id="machineCodeOutput"></pre>
+
+<label>External Data (Hex, 1 per instruction):</label>
+<pre id="externalDataOutput"></pre>
+<img src="ni_script.png" alt="ni_script.png">
+<script>
+function compileNiScript() {
+  const input = document.getElementById("nisciptInput").value.trim().split("\n");
+  const assembly = [];
+  const machine = [];
+  const external = [];
+
+  const instructionMap = {
+    "set ar1": ["von zp nach ar1", 0x1e],
+    "set ar2": ["von zp nach ar2", 0x1f],
+    "add":     ["re add", 0x1d],
+    "sub":     ["re sub", 0x5d],
+    "and":     ["re and", 0x7d],
+    "or":      ["re or", 0x9d],
+    "xor":     ["re xor", 0xbd],
+    "ar2_gt_ar1": ["re ar2_gt_ar1", 0xdd],
+    "ar1_gt_ar2": ["re ar1_gt_ar2", 0xfd],
+    "output":  ["von zp nach output", 0x18],
+    "output2": ["von zp nach output 2", 0x16],
+    "noop":    ["none", 0x00]
+  };
+
+  for (let line of input) {
+    line = line.trim().toLowerCase();
+    if (!line) continue;
+
+    if (line.startsWith("load ")) {
+      const val = parseInt(line.split(" ")[1]);
+      if (isNaN(val) || val < 0 || val > 255) {
+        alert(`Invalid load value: ${line}`);
+        return;
+      }
+      assembly.push("von data nach zp");
+      machine.push(0x1b);
+      external.push(val);
+    } else if (line.startsWith("jump ")) {
+      const addr = parseInt(line.split(" ")[1]);
+      if (isNaN(addr) || addr < 0 || addr > 255) {
+        alert(`Invalid jump address: ${line}`);
+        return;
+      }
+      assembly.push("von data nach zp");
+      machine.push(0x1b);
+      external.push(addr);
+
+      assembly.push("von zp nach count");
+      machine.push(0x17);
+      external.push(0x00); // unused
+    } else if (instructionMap.hasOwnProperty(line)) {
+      const [asm, op] = instructionMap[line];
+      assembly.push(asm);
+      machine.push(op);
+      external.push(0x00); // unused but required
+    } else {
+      alert(`Unknown command: ${line}`);
+      return;
+    }
+  }
+
+  document.getElementById("assemblyOutput").textContent = assembly.join("\n");
+  document.getElementById("machineCodeOutput").textContent = machine.map(b => b.toString(16).padStart(2, "0")).join(",");
+  document.getElementById("externalDataOutput").textContent = external.map(b => b.toString(16).padStart(2, "0")).join(",");
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,42 @@
+ instruktions of low level cpu
+
+von = von a nach b verschieben (kopieren)
+re  = requiers (usses aditional)
+sub = subtract
+comp = compare
+add = addition
+re ra = re that ra(ram address) is set to the correct adress
+coutn = program counter
+dec hex
+31  1F  von zp nach ar2
+30  1E  von zp nach ar1
+29  1D  re bit 5-7 of inst von sub/comp/add nach zp # bits 5-7 are used to indicate if you want the action sub comp or add in that order (010 =sub ,100=comp ,000=add ,logical and = 011, logical or 100,logical xor 101 ,ar2 bigger ar1 110 , ar1 bigger ar2 111)
+28  1C  von zp nach ram (re ra)
+27  1B  von data nach zp
+26  1A  von ram nach zp (re ra)
+25  19  von zp nach ra
+24  18  von zp nach output
+23  17  von zp nach count
+22  16  von zp nach output 2
+21  15  von duip nach zp
+20  14  von zp nach zpe
+19  13  von zpe nach zp
+18  12
+17  11
+16  10
+15  F
+14  E
+13  D
+12  C
+11  B
+10  A
+9   9
+8   8
+7   7
+6   6
+5   5
+4   4
+3   3
+2   2
+1   1
+0   0

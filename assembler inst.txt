@@ -1,0 +1,213 @@
+
+# 📘 NI\_CPU Assembly Instruction Reference
+
+## 📦 Overview
+
+* **All instructions are 1 or 2 bytes**
+* Opcodes range from **0x13 (19) to 0x1F (31)**
+* You operate mainly using registers: `ZP`, `AR1`, `AR2`, `RA`, `ZPE`
+* Memory is **256 bytes**, addressed via `RA`
+* All computation is done through ALU using `RE` instruction
+* Program Counter is `COUNT`
+
+---
+
+## 🧾 Instructions (19–31)
+
+### `von A nach B`
+
+Means **copy the value from register/memory A into B**
+
+---
+
+### 🔹 `von zp nach ar2`
+
+* **Opcode:** `31` / `0x1F`
+* **Function:** `ar2 = zp`
+* Copies the value from the general-purpose register `zp` into `ar2`.
+
+---
+
+### 🔹 `von zp nach ar1`
+
+* **Opcode:** `30` / `0x1E`
+* **Function:** `ar1 = zp`
+* Same as above, but into `ar1`.
+
+---
+
+### 🔹 `re bit 5–7 of instruction`
+
+* **Opcode base:** `29` / `0x1D`
+* **Function:** Performs an ALU operation on `ar1` and `ar2`. Result goes into `zp`.
+* The operation is selected by **bits 5–7** of the instruction.
+
+#### 🧠 ALU Modes (bits 5–7):
+
+| Bits  | Value | Operation                                  |       |
+| ----- | ----- | ------------------------------------------ | ----- |
+| `000` | 0     | `ADD` → `zp = ar1 + ar2`                   |       |
+| `010` | 2     | `SUB` → `zp = ar1 - ar2`                   |       |
+| `011` | 3     | `AND` → `zp = ar1 & ar2`                   |       |
+| `100` | 4     | `OR`  → \`zp = ar1                         | ar2\` |
+| `101` | 5     | `XOR` → `zp = ar1 ^ ar2`                   |       |
+| `110` | 6     | `AR2 > AR1` → `zp = 1 if ar2 > ar1 else 0` |       |
+| `111` | 7     | `AR1 > AR2` → `zp = 1 if ar1 > ar2 else 0` |       |
+
+**Example:**
+
+```asm
+RE ADD        ; 0x1D
+RE SUB        ; 0x1D | 0b010 = 0x1D | 0x02 = 0x1F (example)
+```
+
+---
+
+### 🔹 `von zp nach ram (re ra)`
+
+* **Opcode:** `28` / `0x1C`
+* **Function:** `ram[ra] = zp`
+* Stores the value from `zp` into RAM using the address in `ra`.
+
+---
+
+### 🔹 `von data nach zp`
+
+* **Opcode:** `27` / `0x1B`
+* **Function:** `zp = next_byte`
+* Loads an **immediate 8-bit constant** into `zp`.
+* Requires a second byte after the opcode (1B **XX**)
+
+**Example:**
+
+```asm
+von data nach zp 5   ; 0x1B 0x05
+```
+
+---
+
+### 🔹 `von ram nach zp (re ra)`
+
+* **Opcode:** `26` / `0x1A`
+* **Function:** `zp = ram[ra]`
+* Reads from RAM at address `ra` into `zp`.
+
+---
+
+### 🔹 `von zp nach ra`
+
+* **Opcode:** `25` / `0x19`
+* **Function:** `ra = zp`
+* Sets the memory address register `ra` to `zp`.
+
+---
+
+### 🔹 `von zp nach output`
+
+* **Opcode:** `24` / `0x18`
+* **Function:** `output = zp`
+* Sends the value in `zp` to the first output port.
+
+---
+
+### 🔹 `von zp nach count`
+
+* **Opcode:** `23` / `0x17`
+* **Function:** `count = zp`
+* Sets the **program counter** to the value in `zp`.
+* This is how you **jump** to another instruction.
+
+**Example (Jump to address 0x0A):**
+
+```asm
+von data nach zp 10
+von zp nach count
+```
+
+---
+
+### 🔹 `von zp nach output 2`
+
+* **Opcode:** `22` / `0x16`
+* **Function:** `output2 = zp`
+* Sends `zp` to the **second** output port.
+
+---
+
+### 🔹 `von duip nach zp`
+
+* **Opcode:** `21` / `0x15`
+* **Function:** `zp = input`
+* Reads a value from **input port** `duip` into `zp`.
+
+---
+
+### 🔹 `von zp nach zpe`
+
+* **Opcode:** `20` / `0x14`
+* **Function:** `zpe = zp`
+* Temporary storage. Useful for swapping values.
+
+---
+
+### 🔹 `von zpe nach zp`
+
+* **Opcode:** `19` / `0x13`
+* **Function:** `zp = zpe`
+* Restores `zp` from `zpe`.
+
+---
+
+## 🚫 Opcodes 0–18
+
+* **Not used**
+* May be treated as NOPs or invalid (undefined behavior)
+* Possibly reserved for future expansion
+
+---
+
+# 🧠 Registers Summary
+
+| Register  | Description                      |
+| --------- | -------------------------------- |
+| `zp`      | General-purpose register         |
+| `ar1`     | ALU input A                      |
+| `ar2`     | ALU input B                      |
+| `ra`      | RAM address register             |
+| `zpe`     | Temporary register (buffer/swap) |
+| `count`   | Program Counter                  |
+| `duip`    | Input device (keyboard, etc.)    |
+| `output`  | Output port                      |
+| `output2` | Second output port               |
+
+---
+
+# ✅ Example Program: Add 5 + 3, Output Result
+
+```asm
+von data nach zp 5
+von zp nach ar1
+
+von data nach zp 3
+von zp nach ar2
+
+re add
+
+von zp nach output
+```
+
+**Result:** Output will contain `8`
+
+---
+
+# 🧠 Pro Tip: Jumping
+
+This is how you do a jump:
+
+```asm
+von data nach zp 12
+von zp nach count
+```
+
+💡 There are no conditional jumps, but you can **simulate branching** using ALU operations and data-based jumps.
+
