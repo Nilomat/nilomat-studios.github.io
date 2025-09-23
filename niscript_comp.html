@@ -55,7 +55,14 @@ function compileNiScript() {
     "ar1_gt_ar2": ["re ar1_gt_ar2", 0xfd],
     "output":  ["von zp nach output", 0x18],
     "output2": ["von zp nach output 2", 0x16],
-    "noop":    ["none", 0x00]
+    "noop":    ["none", 0x00],
+	"jumpzp":    ["von zp nach count", 0x17],
+	"set ra":    ["von zp nach ra", 0x19],
+	"set ram":    ["von zp nach ram (re ra)", 0x1c],
+	"get ram":    ["von ram nach zp (re ra)", 0x1a],
+	"get input":    ["von duip nach zp", 0x15],
+	"get zpe":    ["von zpe nach zp", 0x13],
+	"set zpe":    ["von zp nach zpe", 0x14]
   };
 
   for (let line of input) {
