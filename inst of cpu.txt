@@ -10,7 +10,7 @@ coutn = program counter
 dec hex
 31  1F  von zp nach ar2
 30  1E  von zp nach ar1
-29  1D  re bit 5-7 of inst von sub/comp/add nach zp # bits 5-7 are used to indicate if you want the action sub comp or add in that order (010 =sub ,100=comp ,000=add ,logical and = 011, logical or 100,logical xor 101 ,ar2 bigger ar1 110 , ar1 bigger ar2 111)
+29  1D  re bit 5-7 of inst von sub/comp/add nach zp # bits 5-7 are used to indicate if you want the action sub comp or add in that order (010 =sub ,001=comp ,000=add ,logical and = 011, logical or 100,logical xor 101 ,ar2 bigger ar1 110 , ar1 bigger ar2 111)
 28  1C  von zp nach ram (re ra)
 27  1B  von data nach zp
 26  1A  von ram nach zp (re ra)
@@ -21,7 +21,7 @@ dec hex
 21  15  von duip nach zp
 20  14  von zp nach zpe
 19  13  von zpe nach zp
-18  12
+18  12 von count nach zp
 17  11
 16  10
 15  F
