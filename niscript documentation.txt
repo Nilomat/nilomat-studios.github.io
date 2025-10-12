@@ -1,0 +1,94 @@
+NI-script
+##    The Basics
+
+Before diving in:
+
+* **`zp`** (Zero Page) is the main data register — everything passes through it.
+* **`ar1`** and **`ar2`** are used for math and comparisons.
+* **`ram`** and **`ra`** work together for memory storage.
+* **`zpe`** is an extra register often used for loops or temporary storage.
+
+Now, let’s go through all commands.
+
+---
+
+##    Data Movement Commands
+
+| Command          | Meaning                                      | Explanation                                                                                                      |
+| ---------------- | -------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| **`load <val>`** | Load constant into `zp`                      | Puts a fixed value directly into the `zp` register. Example: `load 05` → `zp = 05`.                              |
+| **`set ar1`**    | Move `zp` to `ar1`                           | Copies whatever is in `zp` into `ar1`.                                                                           |
+| **`set ar2`**    | Move `zp` to `ar2`                           | Copies `zp` into `ar2`.                                                                                          |
+| **`set ra`**     | Set the current RAM address to `zp`          | Selects which memory cell (RAM address) will be used next. Example: `load 10` → `set ra` means “use address 10.” |
+| **`set ram`**    | Store `zp` into current RAM address          | Saves the current `zp` value into the memory cell selected by `ra`.                                              |
+| **`set zpe`**    | Set `zpe` register to `zp`                   | Copies `zp` into the `zpe` register. Often used for loop counters or saved values.                               |
+| **`get ram`**    | Load `zp` with data from current RAM address | Reads the value stored in the memory cell at `ra` and puts it in `zp`.                                           |
+| **`get zpe`**    | Load `zp` with value of `zpe`                | Copies `zpe` into `zp`.                                                                                          |
+| **`get input`**  | Read user input into `zp`                    | Waits for input from the user and stores it in `zp`.                                                             |
+| **`get count`**  | Get current instruction address              | Loads the program’s current counter (address) into `zp`. Useful for debugging or jumps.                          |
+
+---
+
+##    Arithmetic Commands
+
+| Command   | Meaning          | Explanation                                        |
+| --------- | ---------------- | -------------------------------------------------- |
+| **`add`** | `ar1 + ar2 → zp` | Adds `ar1` and `ar2`, stores the result in `zp`.   |
+| **`sub`** | `ar1 - ar2 → zp` | Subtracts `ar2` from `ar1`, result goes into `zp`. |
+
+---
+
+##   ️ Bitwise Logic Commands
+
+| Command   | Meaning     | Explanation                                                                           |         |
+| --------- | ----------- | ------------------------------------------------------------------------------------- | ------- |
+| **`and`** | Bitwise AND | Performs a logical AND on `ar1` and `ar2`, result in `zp`. (`1 & 1 = 1`, otherwise 0) |         |
+| **`or`**  | Bitwise OR  | Performs a logical OR on `ar1` and `ar2`, result in `zp`. (`1                         | 0 = 1`) |
+| **`xor`** | Bitwise XOR | Performs an exclusive OR. (`1 ^ 1 = 0`, `1 ^ 0 = 1`)                                  |         |
+
+---
+
+##    Comparison and Control Flow
+
+| Command          | Meaning                                 | Explanation                                                              |
+| ---------------- | --------------------------------------- | ------------------------------------------------------------------------ |
+| **`comp`**       | Jump to address in `zp` if `ar1 == ar2` | Compares `ar1` and `ar2`; if equal, jumps to the address stored in `zp`. |
+| **`ar2_gt_ar1`** | Jump if `ar2 > ar1`                     | If `ar2` is greater than `ar1`, jumps to the address currently in `zp`.  |
+| **`ar1_gt_ar2`** | Jump if `ar1 > ar2`                     | If `ar1` is greater than `ar2`, jumps to the address currently in `zp`.  |
+
+These comparison-based jumps are how **if-statements and loops** are built.
+
+---
+
+##    Jump Commands
+
+| Command           | Meaning                        | Explanation                                                                                                              |
+| ----------------- | ------------------------------ | ------------------------------------------------------------------------------------------------------------------------ |
+| **`jump <addr>`** | Jump to a fixed address        | Moves the instruction pointer to a specific address, continuing execution there. Usually followed by a `00` placeholder. |
+( jump counts as 2 instructions use jumpzp)
+| **`jumpzp`**      | Jump to address stored in `zp` | Makes a dynamic jump — execution continues from the address held in `zp`. Useful for computed jumps or function calls.   |
+
+---
+
+##    Output Commands
+
+| Command       | Meaning                                 | Explanation                                                                   |
+| ------------- | --------------------------------------- | ----------------------------------------------------------------------------- |
+| **`output`**  | Print value in `zp`                     | Sends the current `zp` value to the main output (screen, console, etc).       |
+| **`output2`** | Print value in `zp` to secondary output | Works like `output` but to a second channel (could be log, serial port, etc). |
+
+---
+
+##    Summary of Functionality
+
+| Type        | Purpose                               | Example                         |
+| ----------- | ------------------------------------- | ------------------------------- |
+| **Data**    | Move or copy values between registers | `load 10`, `set ar1`, `get zpe` |
+| **Math**    | Do arithmetic with registers          | `add`, `sub`                    |
+| **Logic**   | Bitwise operations                    | `and`, `or`, `xor`              |
+| **Compare** | Conditional control                   | `comp`, `ar1_gt_ar2`            |
+| **Jump**    | Control program flow                  | `jump 05`, `jumpzp`             |
+| **IO**      | Input and Output                      | `get input`, `output`           |
+
+---
+
