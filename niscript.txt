@@ -225,6 +225,8 @@ noop       # end placeholder
 | `get zpe`     | set zp to zpe           | No                                       |
 | `get input`   | set zp to user input    | No                                       |
 | `get count`   | get the current adress  | No                                       |
+| `get sr`      | get the mem sector reg  | No                                       |
+| `set sr`      | set the mem sector reg  | No                                       |
 | `add`         | Add ar1 + ar2 → zp      | No                                       |
 | `sub`         | Subtract ar1 - ar2 → zp | No                                       |
 | `and`         | Bitwise AND             | No                                       |
