@@ -22,13 +22,13 @@ dec hex
 20  14  von zp nach zpe
 19  13  von zpe nach zp
 18  12 von count nach zp
-17  11
-16  10
-15  F
-14  E
-13  D
-12  C
-11  B
+17  11 von zp to sr(sector register)
+16  10 von sr(sector register) to zp
+15  F  von duip 2 nach zp
+14  E  von duip 3 nach zp
+13  D  von duip 4 nach zp
+12  C  von zp nach output3
+11  B  von zp nach output4
 10  A
 9   9
 8   8

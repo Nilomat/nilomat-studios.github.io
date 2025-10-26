@@ -35,7 +35,7 @@
 
 <label>External Data (Hex, 1 per instruction):</label>
 <pre id="externalDataOutput"></pre>
-<img src="ni_script.png" alt="ni_script.png">
+<img src="ni_script.png" alt="ni_script.png"width=100%>
 <script>
 function compileNiScript() {
   const input = document.getElementById("nisciptInput").value.trim().split("\n");
@@ -44,29 +44,35 @@ function compileNiScript() {
   const external = [];
 
   const instructionMap = {
-    "set ar1": ["von zp nach ar1", 0x1e],
-    "set ar2": ["von zp nach ar2", 0x1f],
-    "add":     ["re add", 0x1d],
-    "sub":     ["re sub", 0x5d],
-    "and":     ["re and", 0x7d],
-	"comp":     ["re comp", 0x3d],
-    "or":      ["re or", 0x9d],
-    "xor":     ["re xor", 0xbd],
-    "ar2_gt_ar1": ["re ar2_gt_ar1", 0xdd],
-    "ar1_gt_ar2": ["re ar1_gt_ar2", 0xfd],
-    "output":  ["von zp nach output", 0x18],
-    "output2": ["von zp nach output 2", 0x16],
-    "noop":    ["none", 0x00],
-	"jumpzp":    ["von zp nach count", 0x17],
-	"set ra":    ["von zp nach ra", 0x19],
-	"set ram":    ["von zp nach ram (re ra)", 0x1c],
-	"get ram":    ["von ram nach zp (re ra)", 0x1a],
-	"get input":    ["von duip nach zp", 0x15],
-	"get zpe":    ["von zpe nach zp", 0x13],
-	"get count":    ["von count nach zp", 0x12],
-	"set zpe":    ["von zp nach zpe", 0x14],
-	"set sr":    ["von zp nach zpe", 0x10],
-	"get sr":    ["von zp nach zpe", 0x11]
+    "set ar1": ["set ar1", 0x1e],
+    "set ar2": ["set ar2", 0x1f],
+    "add":     ["add", 0x1d],
+    "sub":     ["sub", 0x5d],
+    "and":     ["and", 0x7d],
+	"comp":     ["comp", 0x3d],
+    "or":      ["or", 0x9d],
+    "xor":     ["xor", 0xbd],
+    "ar2_gt_ar1": ["ar2_gt_ar1", 0xdd],
+    "ar1_gt_ar2": ["ar1_gt_ar2", 0xfd],
+    "output":  ["output", 0x18],
+    "output2": ["output2", 0x16],
+    "noop":    ["noop", 0x00],
+	"jumpzp":    ["jumpzp", 0x17],
+	"set ra":    ["set ra", 0x19],
+	"set ram":    ["set ram", 0x1c],
+	"get ram":    ["get ram", 0x1a],
+	"get input":    ["get input", 0x15],
+	"get zpe":    ["get zpe", 0x13],
+	"get count":    ["get count", 0x12],
+	"set zpe":    ["set zpe", 0x14],
+	"set sr":    ["set sr", 0x10],
+	"get sr":    ["get sr", 0x11],
+  "get input2":    ["get input2", 0x0f],
+  "get input3":    ["get input3", 0x0e],
+  "get input4":    ["get input4", 0x0d],
+  "output3":    ["output3", 0x0c],
+  "output4":    ["output4", 0x0b],
+
   };
 
   for (let line of input) {

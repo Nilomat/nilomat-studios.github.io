@@ -1,114 +1,161 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>NI_CPU Assembler & Decompiler</title>
-  <style>
-    body { font-family: monospace; padding: 20px; background: #f9f9f9; }
-    h1 { margin-bottom: 10px; }
-    .container { display: flex; gap: 20px; flex-wrap: wrap; }
-    .box { flex: 1; min-width: 300px; display: flex; flex-direction: column; }
-    textarea {
-      width: 100%; height: 200px; font-family: monospace;
-      font-size: 14px; padding: 10px; box-sizing: border-box; resize: vertical;
-    }
-    button {
-      margin: 10px 0; padding: 10px 15px;
-      font-size: 16px; cursor: pointer; align-self: flex-start;
-    }
-    label { font-weight: bold; margin: 10px 0 5px; }
-    pre {
-      background: #222; color: #eee; padding: 10px;
-      white-space: pre-wrap; min-height: 60px;
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>NI_CPU Decompiler</title>
+<style>
+  body { font-family: monospace; margin: 20px; background: #f0f0f0; }
+  textarea { width: 100%; height: 100px; font-family: monospace; font-size: 14px; }
+  button { margin: 10px 0; padding: 10px 15px; font-size: 16px; cursor: pointer; }
+  pre { background: #222; color: #eee; padding: 15px; white-space: pre-wrap; min-height: 200px; }
+</style>
 </head>
 <body>
 
-<h1>NI_CPU Assembler & Decompiler</h1>
+<h1>NI_CPU Decompiler</h1>
+<p>Enter machine code bytes as hex, separated by commas (e.g. <code>1B,1E,1F,1D,18,00,5D,7D</code>):</p>
+<textarea id="inputBytes" placeholder="Enter hex bytes here..."></textarea>
+<br />
+<button onclick="decompile()">Decompile</button>
 
-<div class="container">
-
-  <div class="box">
-    <label for="asmInput">Assembly Input</label>
-    <textarea id="asmInput" placeholder="e.g.&#10;von zp nach ar1&#10;re add&#10;none"></textarea>
-    <button onclick="assemble()">Assemble</button>
-    <label>Machine Code Output</label>
-    <pre id="asmOutput"></pre>
-  </div>
-
-  <div class="box">
-    <label for="hexInput">Hex Input</label>
-    <textarea id="hexInput" placeholder="e.g.&#10;1e,1d,00"></textarea>
-    <button onclick="decompile()">Decompile</button>
-    <label>Decompiled Assembly</label>
-    <pre id="hexOutput"></pre>
-  </div>
-
-</div>
-
-<a href="inst of cpu.txt">Machine code cheat sheet</a> <a href="assembler inst.txt">NI_assembly code cheat sheet</a>
+<h2>Assembly Output:</h2>
+<pre id="outputAsm"></pre>
 
 <script>
-const opcodeMap = {
-  0x00: "none",
-  0x1f: "von zp nach ar2",
-  0x1e: "von zp nach ar1",
-  0x1d: "re add",
-  0x5d: "re sub",
-  0x7d: "re and",
-  0x3d: "re comp",
-  0x9d: "re or",
-  0xbd: "re xor",
-  0xdd: "re ar2_gt_ar1",
-  0xfd: "re ar1_gt_ar2",
-  0x1b: "von data nach zp",
-  0x1c: "von zp nach ram (re ra)",
-  0x1a: "von ram nach zp (re ra)",
-  0x19: "von zp nach ra",
-  0x18: "von zp nach output",
-  0x17: "von zp nach count",
-  0x16: "von zp nach output 2",
-  0x15: "von duip nach zp",
-  0x14: "von zp nach zpe",
-  0x13: "von zpe nach zp"
-  0x12: "von count nach zp"
-};
-
-const reverseMap = Object.fromEntries(
-  Object.entries(opcodeMap).map(([k, v]) => [v, parseInt(k)])
-);
-
-function assemble() {
-  const input = document.getElementById("asmInput").value.trim().toLowerCase().split("\n");
-  const output = [];
-
-  for (const line of input) {
-    if (!line) continue;
-    const opcode = reverseMap[line.trim()];
-    if (opcode === undefined) {
-      alert(`Unknown instruction: ${line}`);
-      return;
-    }
-    output.push(opcode.toString(16).padStart(2, '0'));
-  }
-
-  document.getElementById("asmOutput").textContent = output.join(",");
-  document.getElementById("hexInput").value = output.join(",");
-}
-
 function decompile() {
-  const input = document.getElementById("hexInput").value.trim();
-  const bytes = input.split(/[\s,]+/).map(b => parseInt(b, 16));
-  const output = [];
-
-  for (const byte of bytes) {
-    if (isNaN(byte)) continue;
-    const asm = opcodeMap[byte];
-    output.push(asm || `unknown (${byte.toString(16).padStart(2, '0')})`);
+  const input = document.getElementById("inputBytes").value.trim();
+  if (!input) {
+    alert("Please enter some machine code bytes.");
+    return;
   }
-
-  document.getElementById("hexOutput").textContent = output.join("\n");
+  
+  // Parse input hex bytes into array of integers
+  const bytes = input.split(",").map(b => parseInt(b.trim(), 16));
+  if (bytes.some(isNaN)) {
+    alert("Invalid hex byte found.");
+    return;
+  }
+  
+  let i = 0;
+  const lines = [];
+  while (i < bytes.length) {
+    const byte = bytes[i];
+    switch(byte) {
+      case 0x00:
+        lines.push("noop");
+        i++;
+        break;
+      case 0x1F:
+        lines.push("set ar2");
+        i++;
+        break;
+      case 0x1E:
+        lines.push("set ar1");
+        i++;
+        break;
+      case 0x1D:
+      case 0x5D:
+      case 0x7D:
+      case 0x9D:
+      case 0xBD:
+      case 0xDD:
+      case 0xFD:
+        {
+          const opMap = {
+            0x1D: "add",
+            0x5D: "sub",
+            0x7D: "and",
+            0x9D: "or",
+			      0x3D: "comp",
+            0xBD: "xor",
+            0xDD: "ar2_gt_ar1",
+            0xFD: "ar1_gt_ar2"
+          };
+          const opName = opMap[byte] || "unknown";
+          lines.push(opName);
+          i++;
+        }
+        break;
+      case 0x1B: // von data nach zp (external data)
+        lines.push("load ##");
+        i++;
+        break;
+      case 0x1C:
+        lines.push("set ram");
+        i++;
+        break;
+      case 0x1A:
+        lines.push("get ram");
+        i++;
+        break;
+      case 0x19:
+        lines.push("set ra");
+        i++;
+        break;
+      case 0x18:
+        lines.push("output");
+        i++;
+        break;
+      case 0x17:
+        lines.push("jumpzp");
+        i++;
+        break;
+      case 0x16:
+        lines.push("output2");
+        i++;
+        break;
+      case 0x15:
+        lines.push("get input");
+        i++;
+        break;
+      case 0x14:
+        lines.push("set zpe");
+        i++;
+        break;
+      case 0x13:
+        lines.push("get zpe");
+        i++;
+        break;
+      case 0x12:
+        lines.push("get count");
+        i++;
+        break;
+      case 0x11:
+        lines.push("set sr");
+        i++;  
+        break;
+      case 0x10:
+        lines.push("get sr");
+        i++;    
+        break;
+      case 0x0f:
+        lines.push("get input2");
+        i++; 
+        break; 
+      case 0x0e:
+        lines.push("get input3");
+        i++;
+        break;      
+      case 0x0d:
+        lines.push("get input4");
+        i++;
+        break;   
+      case 0x0c:
+        lines.push("output3");
+        i++;   
+        break;
+      case 0x0b:
+        lines.push("output4");
+        i++; 
+        break;
+      default:
+        lines.push(`Unknown opcode ${byte.toString(16).padStart(2,"0")}`);
+        i++;
+    }
+  }
+  
+  document.getElementById("outputAsm").textContent = lines.join("\n");
 }
 </script>
 

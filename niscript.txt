@@ -224,6 +224,9 @@ noop       # end placeholder
 | `get ram`     | set zp to current ram   | No                                       |
 | `get zpe`     | set zp to zpe           | No                                       |
 | `get input`   | set zp to user input    | No                                       |
+| `get input2`  | set zp to user input 2  | No                                       |
+| `get input3`  | set zp to user input 3  | No                                       |
+| `get input4`  | set zp to user input 4  | No                                       |
 | `get count`   | get the current adress  | No                                       |
 | `get sr`      | get the mem sector reg  | No                                       |
 | `set sr`      | set the mem sector reg  | No                                       |
@@ -237,6 +240,14 @@ noop       # end placeholder
 | `ar1_gt_ar2`  | Compare ar1 > ar2       | No                                       |
 | `output`      | Output zp               | No                                       |
 | `output2`     | Output2 zp              | No                                       |
-| `jump <addr>` | Jump to address         | Yes (address), plus one `00` placeholder |
+| `output3`     | Output3 zp              | No                                       |
+| `output4`     | Output4 zp              | No                                       |
+| `jump <addr>` | Jump to address         | Yes (address), code starts at line 0     |
 | `jumpzp`      |jump to value stored in zp| No                                      |
+
+
+
+
+
+
 
