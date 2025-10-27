@@ -72,7 +72,9 @@ function compileNiScript() {
   "get input4":    ["get input4", 0x0d],
   "output3":    ["output3", 0x0c],
   "output4":    ["output4", 0x0b],
-
+  "inc gc":    ["inc gc", 0x0a],
+  "set gc":    ["set gc", 0x09],
+  "get gc":    ["get gc", 0x08],
   };
 
   for (let line of input) {
@@ -85,7 +87,7 @@ function compileNiScript() {
         alert(`Invalid load value: ${line}`);
         return;
       }
-      assembly.push("von data nach zp");
+      assembly.push("load");
       machine.push(0x1b);
       external.push(val);
     } else if (line.startsWith("jump ")) {
@@ -94,11 +96,11 @@ function compileNiScript() {
         alert(`Invalid jump address: ${line}`);
         return;
       }
-      assembly.push("von data nach zp");
+      assembly.push("load");
       machine.push(0x1b);
       external.push(addr);
 
-      assembly.push("von zp nach count");
+      assembly.push("set count");
       machine.push(0x17);
       external.push(0x00); // unused
     } else if (instructionMap.hasOwnProperty(line)) {
