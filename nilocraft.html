@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NILOMAT_STUDIOS</title>
+
+<style>
+/* =====================
+   CSS VARIABLES (THEMES)
+   ===================== */
+:root {
+    --bg: #f4f6f8;
+    --bg-card: #ffffff;
+    --text: #1a1a1a;
+    --accent: #4caf50;
+    --header-bg: rgba(255, 255, 255, 0.85);
+    --shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+body.dark {
+    --bg: #121212;
+    --bg-card: #1e1e1e;
+    --text: #f0f0f0;
+    --accent: #66ff99;
+    --header-bg: rgba(20, 20, 20, 0.9);
+    --shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+/* =====================
+   GLOBAL STYLES
+   ===================== */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: "Segoe UI", Roboto, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    transition: background 0.3s, color 0.3s;
+}
+
+/* =====================
+   HEADER
+   ===================== */
+header {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background: var(--header-bg);
+    backdrop-filter: blur(10px);
+    box-shadow: var(--shadow);
+}
+
+.header-container {
+    max-width: 1200px;
+    margin: auto;
+    padding: 15px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.logo {
+    font-size: 22px;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+/* NAV */
+nav {
+    display: flex;
+    gap: 20px;
+}
+
+nav a {
+    text-decoration: none;
+    color: var(--text);
+    font-weight: 500;
+    position: relative;
+}
+
+nav a::after {
+    content: "";
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: var(--accent);
+    transition: width 0.3s;
+}
+
+nav a:hover::after {
+    width: 100%;
+}
+
+/* =====================
+   BUTTONS
+   ===================== */
+button {
+    background: none;
+    border: none;
+    color: var(--text);
+    cursor: pointer;
+    font-size: 18px;
+}
+
+/* =====================
+   HAMBURGER
+   ===================== */
+.hamburger {
+    display: none;
+    font-size: 24px;
+}
+
+/* =====================
+   MOBILE MENU
+   ===================== */
+.mobile-menu {
+    display: none;
+    flex-direction: column;
+    background: var(--bg-card);
+    box-shadow: var(--shadow);
+}
+
+.mobile-menu a {
+    padding: 15px 20px;
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+    text-decoration: none;
+    color: var(--text);
+}
+
+/* =====================
+   MAIN CONTENT
+   ===================== */
+main {
+    max-width: 1200px;
+    margin: auto;
+    padding: 30px 20px;
+    text-align: center;
+    animation: fadeIn 1s ease;
+}
+
+.card {
+    background: var(--bg-card);
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: var(--shadow);
+    margin-bottom: 30px;
+}
+
+/* IMAGES */
+img {
+    max-width: 100%;
+    border-radius: 15px;
+}
+
+/* LINKS */
+.project-links a {
+    display: inline-block;
+    margin: 10px;
+    padding: 12px 20px;
+    border-radius: 30px;
+    background: var(--accent);
+    color: #000;
+    text-decoration: none;
+    font-weight: bold;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.project-links a:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+}
+
+/* =====================
+   ANIMATIONS
+   ===================== */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* =====================
+   RESPONSIVE
+   ===================== */
+@media (max-width: 800px) {
+    nav {
+        display: none;
+    }
+
+    .hamburger {
+        display: block;
+    }
+
+    .mobile-menu.show {
+        display: flex;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <div class="header-container">
+        <div class="logo">NILOMAT_STUDIOS</div>
+
+        <nav>
+            <a href="NI_CPU.html">NI_CPU</a>
+            <a href="NI_PSU.html">NI_PSU</a>
+            <a href="NI_GPU.html">NI_GPU</a>
+            <a href="NI_GAMES.html">NI_GAMES</a>
+            <a href="NEW.html">OLD MENU</a>
+        </nav>
+
+        <div>
+            <button id="themeToggle">🌙</button>
+            <button class="hamburger" id="menuToggle">☰</button>
+        </div>
+    </div>
+
+    <div class="mobile-menu" id="mobileMenu">
+        <a href="NI_CPU.html">NI_CPU</a>
+        <a href="NI_PSU.html">NI_PSU</a>
+        <a href="NI_GPU.html">NI_GPU</a>
+        <a href="NI_GAMES.html">NI_GAMES</a>
+        <a href="NEW.html">OLD MENU</a>
+    </div>
+</header>
+
+<main>
+
+<div class="card">
+<img src="steel.png"  style="width:10%;"> <br>
+<a href="nilocraft-1.0.0-neoforge-1.21.8.jar" download>Download nilocraft</a>
+</div>
+
+
+</main>
+
+<script>
+/* HAMBURGER MENU */
+const menuToggle = document.getElementById("menuToggle");
+const mobileMenu = document.getElementById("mobileMenu");
+
+menuToggle.onclick = () => {
+    mobileMenu.classList.toggle("show");
+};
+
+/* DARK MODE */
+const themeToggle = document.getElementById("themeToggle");
+
+if (localStorage.getItem("theme") === "dark") {
+    document.body.classList.add("dark");
+    themeToggle.textContent = "☀️";
+}
+
+themeToggle.onclick = () => {
+    document.body.classList.toggle("dark");
+    const isDark = document.body.classList.contains("dark");
+    localStorage.setItem("theme", isDark ? "dark" : "light");
+    themeToggle.textContent = isDark ? "☀️" : "🌙";
+};
+</script>
+
+</body>
+</html>
