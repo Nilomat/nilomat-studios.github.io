@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Nicpu-F Assembler</title>
+<style>
+body { font-family: Arial; background:#111; color:#eee; padding:20px; }
+textarea { width:100%; height:280px; background:#222; color:#0f0; padding:10px; }
+button { padding:10px 20px; margin-top:10px; }
+pre { background:#000; padding:10px; color:#0f0; }
+</style>
+</head>
+<body>
+
+<h2>Nicpu-F Assembler (FULL)</h2>
+
+<textarea id="input">
+// ===== Example =====
+IMP R1 0 10
+IMP R2 0 5
+
+ADD R3 R1 R2
+SUB R4 R1 R2
+MULT R5 R1 R2
+DEV R6 R1 R2
+
+AND R7 R1 R2
+OR R8 R1 R2
+XOR R9 R1 R2
+
+SHL R10 R1
+SHR R11 R1
+
+STORE 100 R1
+LOAD R12 100
+
+PUSH R1
+POP
+
+HALT
+</textarea>
+
+<br>
+<button onclick="compileCode()">Compile</button>
+
+<h3>HEX Output</h3>
+<pre id="output"></pre>
+
+<script>
+
+// ===== INSTRUCTION MAP =====
+const INST = {
+    NOOP:0,
+
+    MOVE:1, INC:2, DEC:3, IMP:4, LOAD:5, STORE:6,
+    PUSH:7, POP:8,
+
+    JUMP:9,
+
+    ADD:10, SUB:11, DEV:12, MULT:13,
+
+    EQC:14, GTC:15, LTC:16,
+
+    BEQ:17, BEQI:18, BEQZ:19,
+    GTB:20, LTB:21, GEB:22, LEB:23,
+
+    AND:24, NAND:25, OR:26, XOR:27, XNOR:28, NOT:29, NOR:30,
+
+    SHL:31, SHR:32,
+
+    INC_MEM:33, DEC_MEM:34,
+    JTS:35, JES:36,
+
+    HALT:255
+};
+
+// ===== HELPERS =====
+function reg(v){
+    if(!v) return 0;
+    v=v.toUpperCase();
+    if(v.startsWith("R")) return parseInt(v.slice(1))||0;
+    return parseInt(v)||0;
+}
+
+function num(v){
+    return parseInt(v)||0;
+}
+
+function hex(v){
+    return Number(v).toString(16).toUpperCase().padStart(2,"0");
+}
+
+// ===== COMPILER =====
+function compileCode(){
+    let lines = document.getElementById("input").value.split("\n");
+    let out=[];
+
+    for(let raw of lines){
+
+        let line = raw.split("//")[0].trim();
+        if(!line) continue;
+
+        let p=line.split(/\s+/);
+        let op=p[0].toUpperCase();
+
+        if(!(op in INST)){
+            out.push("ERROR: "+raw);
+            continue;
+        }
+
+        let c=0,b=0,a=0;
+
+        // ===== RULES =====
+
+        // IMPORT
+        if(op==="IMP"){
+            c = reg(p[1]);
+            b = num(p[2]); // upper byte
+            a = num(p[3]); // lower byte
+        }
+
+        // MOVE / LOAD
+        else if(op==="MOVE" || op==="LOAD"){
+            c = reg(p[1]);
+            b = reg(p[2]);
+        }
+
+        // STORE
+        else if(op==="STORE"){
+            c = num(p[1]); // address
+            b = reg(p[2]);
+        }
+
+        // INC / DEC
+        else if(op==="INC" || op==="DEC"){
+            c = reg(p[1]);
+            b = reg(p[2]);
+            a = num(p[3]);
+        }
+
+        // INC_MEM / DEC_MEM
+        else if(op==="INC_MEM" || op==="DEC_MEM"){
+            c = num(p[1]); // address
+            b = num(p[2]); // amount
+        }
+
+        // PUSH
+        else if(op==="PUSH"){
+            b = reg(p[1]);
+        }
+
+        // POP / HALT / NOOP / JES
+        else if(["POP","HALT","NOOP","JES"].includes(op)){
+            // no args
+        }
+
+        // JUMP
+        else if(op==="JUMP"){
+            b = reg(p[1]);
+            a = num(p[2])-1;
+        }
+
+        // JTS (subroutine)
+        else if(op==="JTS"){
+            c = num(p[1]); // upper
+            a = num(p[2]); // lower
+        }
+
+        // SHIFT / NOT
+        else if(op==="SHL" || op==="SHR" || op==="NOT"){
+            c = reg(p[1]);
+            b = reg(p[2]);
+        }
+
+        // GENERIC 3-REG (ALU + compare + logic)
+        else {
+            c = reg(p[1]);
+            b = reg(p[2]);
+            a = reg(p[3]);
+        }
+
+        out.push(
+            hex(c)+""+
+            hex(b)+""+
+            hex(a)+""+
+            hex(INST[op])
+        );
+    }
+
+    document.getElementById("output").textContent = out.join("\n");
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Secure HTML Locker</title>
+
+<style>
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: linear-gradient(135deg, #0f172a, #1e293b);
+        color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+    }
+
+    .container {
+        background: rgba(255,255,255,0.05);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 16px;
+        padding: 30px;
+        width: 90%;
+        max-width: 420px;
+        box-shadow: 0 0 30px rgba(0,0,0,0.4);
+    }
+
+    h1 {
+        margin-top: 0;
+        text-align: center;
+    }
+
+    p {
+        opacity: 0.8;
+        text-align: center;
+    }
+
+    input {
+        width: 100%;
+        padding: 14px;
+        margin-top: 15px;
+        border: none;
+        border-radius: 10px;
+        background: #111827;
+        color: white;
+        font-size: 16px;
+    }
+
+    button {
+        width: 100%;
+        padding: 14px;
+        margin-top: 15px;
+        border: none;
+        border-radius: 10px;
+        background: #2563eb;
+        color: white;
+        font-size: 16px;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    button:hover {
+        background: #1d4ed8;
+    }
+
+    .error {
+        color: #f87171;
+        text-align: center;
+        margin-top: 12px;
+    }
+
+    #contentFrame {
+        display: none;
+        position: fixed;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        border: none;
+        background: white;
+    }
+</style>
+</head>
+<body>
+
+<div class="container" id="loginBox">
+    <h1>Protected File</h1>
+    <p>Enter password to access the nicpu_f HTML file.</p>
+
+    <input type="password" id="passwordInput" placeholder="Enter password">
+    <button onclick="unlock()">Unlock</button>
+
+    <div class="error" id="errorMsg"></div>
+</div>
+
+<!-- CHANGE THIS FILE -->
+<iframe id="contentFrame" src="index_backup.html"></iframe>
+
+<script>
+/*
+    PASSWORD:
+    SuperSecure123!
+
+    SHA-256 HASH:
+    89e7c8e61c77203de9406136ec15a1ec39af0ae7514b4290dbe4528e759cfb2e
+
+    Replace storedHash with your own hash.
+*/
+
+const storedHash =
+"89e7c8e61c77203de9406136ec15a1ec39af0ae7514b4290dbe4528e759cfb2e";
+
+async function sha256(text) {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(text);
+
+    const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+
+    return hashArray
+        .map(byte => byte.toString(16).padStart(2, "0"))
+        .join("");
+}
+
+async function unlock() {
+    const password = document.getElementById("passwordInput").value;
+    const errorMsg = document.getElementById("errorMsg");
+
+    const hashed = await sha256(password);
+
+    if (hashed === storedHash) {
+        document.getElementById("loginBox").style.display = "none";
+        document.getElementById("contentFrame").style.display = "block";
+
+        // optional session save
+        sessionStorage.setItem("unlocked", "true");
+    } else {
+        errorMsg.textContent = "Wrong password.";
+    }
+}
+
+// Keep unlocked during session
+window.onload = () => {
+    if (sessionStorage.getItem("unlocked") === "true") {
+        document.getElementById("loginBox").style.display = "none";
+        document.getElementById("contentFrame").style.display = "block";
+    }
+};
+
+// Small protection measures
+document.addEventListener("contextmenu", e => e.preventDefault());
+
+document.addEventListener("keydown", e => {
+    if (
+        e.key === "F12" ||
+        (e.ctrlKey && e.shiftKey && ["I","J","C"].includes(e.key)) ||
+        (e.ctrlKey && e.key === "U")
+    ) {
+        e.preventDefault();
+    }
+});
+</script>
+
+</body>
+</html>
